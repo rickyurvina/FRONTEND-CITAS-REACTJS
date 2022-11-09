@@ -13,57 +13,30 @@ import {
 import Formulario from './src/components/Formulario';
 
 const App: () => Node = () => {
-  //color hooks en la parte superior, no puede ser condicionaesl.
-  // const [cliente, setCiente]=useState({})//se aplica arrayDestructuring, multiplesStates, setCliente modifica el state en la app
-  // const [clientes, setCientes]=useState([])
 
-  const [modalVisible, setModalVisible] = useState(false); //modalVisible es solo de lectura
-
-  // setTimeout(()=>{
-  //   setModalVisible(true)
-  // })
-  // console.log(modalVisible)//consultar react native debugger o flipperk
+  const [modalVisible, setModalVisible] = useState(false);
 
   const nuevaCitaHandler = () => {
     console.log('Diste click..');
   };
 
   return (
-    // <Text>Hola mundo</Text>
-    //SafeAreaView es solo para android por la parte superiod
     <SafeAreaView style={styles.container}>
       <Text style={styles.titulo}>
         Administrador de Citas{' '}
         <Text style={styles.tituloBold}>Veterinaria</Text>
       </Text>
-      {/* <Button title='Boton Nuevo' onPress={console.log('Hola desde boton')}>
-      </Button> */}
-      {/* <Pressable onLongPress={funcionNueva}>
-        <Text>Boton Pressable</Text>
-      </Pressable> */}
-      {/* title es un prop */}
-      {/* Dentro de onPress se puede ejecutar javascript */}
-      {/* <Button title='Nueva Cita' onPress={console.log('Presionaste en el boton')}>
-    
-      </Button> */}
-      {/* Pressable soporta mas eventos  */}
-
-      {/* pressable hace que cualquier elemento se presione sobre el */}
-
-      {/* <Pressable onPress={()=>{console.log('presionaste el boton')}} onLongPress={()=>{console.log('Mantuviste presionado')}}>
-          <Text>Nueva Cita</Text>
-        </Pressable> */}
       <Pressable
         style={styles.btnNuevaCita}
-        onPress={() => setModalVisible(true)}>
+        onPress={() => setModalVisible(!modalVisible)}>
         <Text style={styles.btnTextoNuevaCita}>Nueva Cita</Text>
       </Pressable>
 
-  <Formulario modalVisible={modalVisible}/>
+      <Formulario modalVisible={modalVisible} 
+      setModalVisible={setModalVisible}
+      />
+      
     </SafeAreaView>
-    // <View>
-    //   <Text>Hola mundo</Text>
-    // </View>
   );
 };
 
