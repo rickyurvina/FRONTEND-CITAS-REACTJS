@@ -9,6 +9,7 @@ import {
   Pressable,
   Modal,
   FlatList,
+  Alert,
 } from 'react-native';
 
 import Formulario from './src/components/Formulario';
@@ -19,11 +20,28 @@ const App: () => Node = () => {
 
   const [pacientes, setPacientes] = useState([]);
   const [paciente, setPaciente] = useState({});
-  const pacienteEditar = id =>{
-    const pacienteEditar=pacientes.filter(paciente=>paciente.id===id)
-    setPaciente(pacienteEditar[0])
 
-  }
+  const pacienteEditar = id => {
+    const pacienteEditar = pacientes.filter(paciente => paciente.id === id);
+    setPaciente(pacienteEditar[0]);
+  };
+
+  const pacienteEliminar = id => {
+    Alert.alert(
+      'Deseas Eliminar?',
+      'Un paciente eliminado no se puede recuperar',
+      [
+        {text:'Cancelar'},
+        {text:'Si, Eliminar', onPress:()=>{
+          const pacientesActualizados = pacientes.filter(
+            pacienteState=>pacienteState.id !== id
+          )
+          // console.log(pacientesActualizados)
+          setPacientes(pacientesActualizados)
+        }}
+      ]
+    )
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -37,24 +55,26 @@ const App: () => Node = () => {
         <Text style={styles.btnTextoNuevaCita}>Nueva Cita</Text>
       </Pressable>
 
-      {pacientes.length === 0 ? 
+      {pacientes.length === 0 ? (
         <Text style={styles.noPacientes}> No hay pacientes</Text>
-       : 
-        <FlatList 
+      ) : (
+        <FlatList
           style={styles.listado}
           data={pacientes}
-          keyExtractor={ (item)=> item.id}
-          renderItem={({item})=>{
-            console.log({item})
+          keyExtractor={item => item.id}
+          renderItem={({item}) => {
+            console.log({item});
             return (
-              <Paciente item={item}
-              setModalVisible={setModalVisible}
-              pacienteEditar={pacienteEditar}
+              <Paciente
+                item={item}
+                setModalVisible={setModalVisible}
+                pacienteEditar={pacienteEditar}
+                pacienteEliminar={pacienteEliminar}
               />
-            )
+            );
           }}
         />
-      }
+      )}
 
       <Formulario
         modalVisible={modalVisible}

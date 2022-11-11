@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, Pressable} from 'react-native';
 
-const Paciente = ({item, setModalVisible, pacienteEditar}) => {
+const Paciente = ({item, setModalVisible, pacienteEditar, pacienteEliminar}) => {
   const {paciente, fecha, id} = item;
 
   const formatearFecha = fecha => {
@@ -28,7 +28,9 @@ const Paciente = ({item, setModalVisible, pacienteEditar}) => {
         }}>
             <Text>Editar</Text>
         </Pressable>
-        <Pressable style={[styles.btn, styles.btnEliminar]}>
+        <Pressable style={[styles.btn, styles.btnEliminar]}
+             onLongPress={()=>pacienteEliminar(id)}
+        >
             <Text>Eliminar</Text>
         </Pressable>
       </View>
