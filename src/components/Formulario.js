@@ -1,5 +1,5 @@
 //rafce
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import {
   Modal,
@@ -10,30 +10,105 @@ import {
   TextInput,
   ScrollView,
   Pressable,
+  Alert,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 
 const Formulario = props => {
   const [paciente, setPaciente] = useState('');
+  const [id, setId] = useState('');
   const [propietario, setPropietario] = useState('');
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [sintomas, setSintomas] = useState('');
   const [fecha, setFecha] = useState(new Date());
+
+  /**
+   * Instancio todos los props que llegan al componente.
+   */
   const {modalVisible} = props;
+  const {pacientes} = props;
+  const {setPacientes} = props;
   const {setModalVisible} = props;
+  const {paciente: pacienteObj} = props;
+  const {setPaciente: setPacienteApp} = props;
+
+  useEffect(() => {
+    if (Object.keys(pacienteObj).length > 0) {
+      setId(pacienteObj.id);
+      setPaciente(pacienteObj.paciente);
+      setPropietario(pacienteObj.propietario);
+      setEmail(pacienteObj.email);
+      setTelefono(pacienteObj.telefono);
+      setSintomas(pacienteObj.sintomas);
+      setFecha(pacienteObj.fecha);
+    }
+  }, [pacienteObj]);
+
+  const handleCita = () => {
+    if ([paciente, propietario, email, fecha, sintomas].includes('')) {//alerta para validar que todos los campos esten llenos.
+      Alert.alert('Error', 'Todos los campos son obligatorios.', [
+        {text: 'Recordar después', style: 'cancel'},
+        {text: 'Cancelar'},
+        {text: 'Ok'},
+      ]);
+      return;
+    }
+    const nuevoPaciente = {
+      paciente,
+      propietario,
+      email,
+      telefono,
+      fecha,
+      sintomas,
+    };
+    if (id) {
+      //se edita el paciente
+      nuevoPaciente.id = id;
+      const pacientesActualizados = pacientes.map(pacienteState =>
+        pacienteState.id === nuevoPaciente.id ? nuevoPaciente : pacienteState,
+      );
+      setPacientes(pacientesActualizados);
+      setPacienteApp({});
+    } else {
+      //Se anade nuevo paciente
+      nuevoPaciente.id = Date.now();
+      //Instancio un nuevo paciente pasandole los states del componente
+      setPacientes([...pacientes, nuevoPaciente]); //Toma lo que ya habia en el state que viene desde App.js y agrega el nuevo paciente del formulario
+    }
+
+    setModalVisible(!modalVisible); //cierro el modal despues de guardar
+
+    setId('');
+    setPaciente('');
+    setPropietario('');
+    setEmail('');
+    setTelefono('');
+    setFecha(new Date());
+    setSintomas('');
+  };
 
   return (
     <Modal animationType="slide" visible={modalVisible}>
       <SafeAreaView style={styles.contenido}>
         <ScrollView>
           <Text style={styles.titulo}>
-            Nueva <Text style={styles.tituloBold}>Cita</Text>
+            {pacienteObj.id ?'Editar':'Nueva'} <Text style={styles.tituloBold}>Cita</Text>
           </Text>
 
-          <Pressable style={styles.btnCancelar}
-          onLongPress={()=>setModalVisible(!modalVisible)}
-          >
+          <Pressable
+            style={styles.btnCancelar}
+            onLongPress={() => {
+              setModalVisible(!modalVisible);
+              setPacienteApp({});
+              setId('');
+              setPaciente('');
+              setPropietario('');
+              setEmail('');
+              setTelefono('');
+              setFecha(new Date());
+              setSintomas('');
+            }}>
             <Text style={styles.btnCancelarTexto}>X Cancelar</Text>
           </Pressable>
 
@@ -87,8 +162,11 @@ const Formulario = props => {
           <View style={styles.campo}>
             <Text style={styles.label}>Fecha Alta</Text>
             <View style={styles.fechaContenedor}>
-              <DatePicker date={fecha} locale="es"
-              onDateChange={(date)=>setFecha(date)} />
+              <DatePicker
+                date={fecha}
+                locale="es"
+                onDateChange={date => setFecha(date)}
+              />
             </View>
           </View>
 
@@ -106,7 +184,9 @@ const Formulario = props => {
             />
           </View>
 
-         
+          <Pressable style={styles.btnNuevaCita} onPress={handleCita}>
+            <Text style={styles.btnNuevaCitaTexto}>{pacienteObj.id ?'Editar':'Agregar'}</Text>
+          </Pressable>
         </ScrollView>
       </SafeAreaView>
     </Modal>

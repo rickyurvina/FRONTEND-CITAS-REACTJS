@@ -8,17 +8,22 @@ import {
   Button,
   Pressable,
   Modal,
+  FlatList,
 } from 'react-native';
 
 import Formulario from './src/components/Formulario';
+import Paciente from './src/components/Paciente';
 
 const App: () => Node = () => {
-
   const [modalVisible, setModalVisible] = useState(false);
 
-  const nuevaCitaHandler = () => {
-    console.log('Diste click..');
-  };
+  const [pacientes, setPacientes] = useState([]);
+  const [paciente, setPaciente] = useState({});
+  const pacienteEditar = id =>{
+    const pacienteEditar=pacientes.filter(paciente=>paciente.id===id)
+    setPaciente(pacienteEditar[0])
+
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,10 +37,33 @@ const App: () => Node = () => {
         <Text style={styles.btnTextoNuevaCita}>Nueva Cita</Text>
       </Pressable>
 
-      <Formulario modalVisible={modalVisible} 
-      setModalVisible={setModalVisible}
+      {pacientes.length === 0 ? 
+        <Text style={styles.noPacientes}> No hay pacientes</Text>
+       : 
+        <FlatList 
+          style={styles.listado}
+          data={pacientes}
+          keyExtractor={ (item)=> item.id}
+          renderItem={({item})=>{
+            console.log({item})
+            return (
+              <Paciente item={item}
+              setModalVisible={setModalVisible}
+              pacienteEditar={pacienteEditar}
+              />
+            )
+          }}
+        />
+      }
+
+      <Formulario
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        pacientes={pacientes}
+        setPacientes={setPacientes}
+        paciente={paciente}
+        setPaciente={setPaciente}
       />
-      
     </SafeAreaView>
   );
 };
