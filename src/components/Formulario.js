@@ -1,5 +1,5 @@
 //rafce
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect,  useContext} from 'react';
 
 import {
   Modal,
@@ -13,6 +13,10 @@ import {
   Alert,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
+import axios from 'axios';
+
+const endpoint = 'http://192.168.1.189:8000/api';
+
 
 const Formulario = props => {
   const [paciente, setPaciente] = useState('');
@@ -32,6 +36,7 @@ const Formulario = props => {
   const {setModalVisible} = props;
   const {paciente: pacienteObj} = props;
   const {setPaciente: setPacienteApp} = props;
+  const {getAllAppointments} = props;
 
   useEffect(() => {
     if (Object.keys(pacienteObj).length > 0) {
@@ -45,8 +50,27 @@ const Formulario = props => {
     }
   }, [pacienteObj]);
 
+  const store = async nuevoPaciente => {
+    const response_ = await axios
+      .post(endpoint + '/appointment', {
+        name: nuevoPaciente.paciente,
+        owner: nuevoPaciente.propietario,
+        email: nuevoPaciente.email,
+        phone: nuevoPaciente.telefono,
+        symptom: nuevoPaciente.sintomas,
+        // date: nuevoPaciente.fecha
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   const handleCita = () => {
-    if ([paciente, propietario, email, fecha, sintomas].includes('')) {//alerta para validar que todos los campos esten llenos.
+    if ([paciente, propietario, email, fecha, sintomas].includes('')) {
+      //alerta para validar que todos los campos esten llenos.
       Alert.alert('Error', 'Todos los campos son obligatorios.', [
         {text: 'Recordar después', style: 'cancel'},
         {text: 'Cancelar'},
@@ -71,14 +95,11 @@ const Formulario = props => {
       setPacientes(pacientesActualizados);
       setPacienteApp({});
     } else {
-      //Se anade nuevo paciente
-      nuevoPaciente.id = Date.now();
-      //Instancio un nuevo paciente pasandole los states del componente
-      setPacientes([...pacientes, nuevoPaciente]); //Toma lo que ya habia en el state que viene desde App.js y agrega el nuevo paciente del formulario
+      store(nuevoPaciente);
     }
 
     setModalVisible(!modalVisible); //cierro el modal despues de guardar
-
+    getAllAppointments();
     setId('');
     setPaciente('');
     setPropietario('');
@@ -88,12 +109,15 @@ const Formulario = props => {
     setSintomas('');
   };
 
+
+ 
   return (
     <Modal animationType="slide" visible={modalVisible}>
       <SafeAreaView style={styles.contenido}>
         <ScrollView>
           <Text style={styles.titulo}>
-            {pacienteObj.id ?'Editar':'Nueva'} <Text style={styles.tituloBold}>Cita</Text>
+            {pacienteObj.id ? 'Editar' : 'Nueva'}{' '}
+            <Text style={styles.tituloBold}>Cita</Text>
           </Text>
 
           <Pressable
@@ -185,7 +209,9 @@ const Formulario = props => {
           </View>
 
           <Pressable style={styles.btnNuevaCita} onPress={handleCita}>
-            <Text style={styles.btnNuevaCitaTexto}>{pacienteObj.id ?'Editar':'Agregar'}</Text>
+            <Text style={styles.btnNuevaCitaTexto}>
+              {pacienteObj.id ? 'Editar' : 'Agregar'}
+            </Text>
           </Pressable>
         </ScrollView>
       </SafeAreaView>

@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useState, useEffect, createContext } from 'react';
 import type {Node} from 'react';
 import {
   SafeAreaView,
@@ -12,14 +12,42 @@ import {
   Alert,
 } from 'react-native';
 
+import axios from 'axios';
 import Formulario from './src/components/Formulario';
 import Paciente from './src/components/Paciente';
+import InformacionPaciente from './src/components/InformacionPaciente';
+
+const endpoint = 'http://192.168.1.189:8000/api';
+const UserContext = createContext();
 
 const App: () => Node = () => {
   const [modalVisible, setModalVisible] = useState(false);
-
   const [pacientes, setPacientes] = useState([]);
   const [paciente, setPaciente] = useState({});
+  const [modalPaciente, setModalPaciente] = useState(false);
+  const [user, setUser] = useState("Jesse Hall");
+
+  useEffect(() => {
+    getAllAppointments();
+  }, []);
+
+  const getAllAppointments = async () => {
+    const response = await axios
+      .get(`${endpoint}/appointment`)
+      .then(res => {
+        setPacientes(res.data);
+      })
+      .catch(error => console.log(error));
+  };
+
+  const deleteAppointment = async id => {
+    await axios
+      .delete(`${endpoint}/appointment/${id}`)
+      .then(res => {
+        getAllAppointments();
+      })
+      .catch(error => console.log(error));
+  };
 
   const pacienteEditar = id => {
     const pacienteEditar = pacientes.filter(paciente => paciente.id === id);
@@ -31,60 +59,71 @@ const App: () => Node = () => {
       'Deseas Eliminar?',
       'Un paciente eliminado no se puede recuperar',
       [
-        {text:'Cancelar'},
-        {text:'Si, Eliminar', onPress:()=>{
-          const pacientesActualizados = pacientes.filter(
-            pacienteState=>pacienteState.id !== id
-          )
-          // console.log(pacientesActualizados)
-          setPacientes(pacientesActualizados)
-        }}
-      ]
-    )
+        {text: 'Cancelar'},
+        {
+          text: 'Si, Eliminar',
+          onPress: () => {
+            deleteAppointment(id);
+          },
+        },
+      ],
+    );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.titulo}>
-        Administrador de Citas{' '}
-        <Text style={styles.tituloBold}>Veterinaria</Text>
-      </Text>
-      <Pressable
-        style={styles.btnNuevaCita}
-        onPress={() => setModalVisible(!modalVisible)}>
-        <Text style={styles.btnTextoNuevaCita}>Nueva Cita</Text>
-      </Pressable>
+    <UserContext.Provider value={'Hola'}>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.titulo}>
+          Administrador de Citas{' '}
+          <Text style={styles.tituloBold}>Veterinaria</Text>
+        </Text>
+        <Pressable
+          style={styles.btnNuevaCita}
+          onPress={() => setModalVisible(!modalVisible)}>
+          <Text style={styles.btnTextoNuevaCita}>Nueva Cita</Text>
+        </Pressable>
 
-      {pacientes.length === 0 ? (
-        <Text style={styles.noPacientes}> No hay pacientes</Text>
-      ) : (
-        <FlatList
-          style={styles.listado}
-          data={pacientes}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => {
-            console.log({item});
-            return (
-              <Paciente
-                item={item}
-                setModalVisible={setModalVisible}
-                pacienteEditar={pacienteEditar}
-                pacienteEliminar={pacienteEliminar}
-              />
-            );
-          }}
+        {pacientes.length === 0 ? (
+          <Text style={styles.noPacientes}> No hay pacientes</Text>
+        ) : (
+          <FlatList
+            style={styles.listado}
+            data={pacientes}
+            keyExtractor={item => item.id}
+            renderItem={({item}) => {
+              return (
+                <Paciente
+                  item={item}
+                  setModalVisible={setModalVisible}
+                  setPaciente={setPaciente}
+                  pacienteEditar={pacienteEditar}
+                  pacienteEliminar={pacienteEliminar}
+                  setModalPaciente={setModalPaciente}
+                />
+              );
+            }}
+          />
+        )}
+
+        <Formulario
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          pacientes={pacientes}
+          setPacientes={setPacientes}
+          paciente={paciente}
+          setPaciente={setPaciente}
+          getAllAppointments={getAllAppointments}
         />
-      )}
 
-      <Formulario
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        pacientes={pacientes}
-        setPacientes={setPacientes}
-        paciente={paciente}
-        setPaciente={setPaciente}
-      />
-    </SafeAreaView>
+        <Modal visible={modalPaciente} animationType="fade">
+          <InformacionPaciente
+            paciente={paciente}
+            setPaciente={setPaciente}
+            setModalPaciente={setModalPaciente}
+          />
+        </Modal>
+      </SafeAreaView>
+    </UserContext.Provider>
   );
 };
 
