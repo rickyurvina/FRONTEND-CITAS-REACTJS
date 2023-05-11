@@ -15,7 +15,7 @@ import {
 import DatePicker from 'react-native-date-picker';
 import axios from 'axios';
 
-const endpoint = 'http://192.168.1.189:8000/api';
+const endpoint = "http://192.168.1.189:8000/api";
 
 
 const Formulario = props => {

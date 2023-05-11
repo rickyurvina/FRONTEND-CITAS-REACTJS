@@ -17,7 +17,7 @@ import Formulario from './src/components/Formulario';
 import Paciente from './src/components/Paciente';
 import InformacionPaciente from './src/components/InformacionPaciente';
 
-const endpoint = 'http://192.168.1.189:8000/api';
+const endpoint = "http://192.168.1.189:8000/api";
 const UserContext = createContext();
 
 const App: () => Node = () => {
@@ -25,7 +25,6 @@ const App: () => Node = () => {
   const [pacientes, setPacientes] = useState([]);
   const [paciente, setPaciente] = useState({});
   const [modalPaciente, setModalPaciente] = useState(false);
-  const [user, setUser] = useState("Jesse Hall");
 
   useEffect(() => {
     getAllAppointments();
