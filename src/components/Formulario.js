@@ -17,15 +17,14 @@ import axios from 'axios';
 
 const endpoint = "http://192.168.1.189:8000/api";
 
-
 const Formulario = props => {
   const [paciente, setPaciente] = useState('');
   const [id, setId] = useState('');
-  const [propietario, setPropietario] = useState('');
+  const [owner, setOwner] = useState('');
   const [email, setEmail] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [sintomas, setSintomas] = useState('');
-  const [fecha, setFecha] = useState(new Date());
+  const [phone, setPhone] = useState('');
+  const [symptom, setSymptom] = useState('');
+  const [date, setDate] = useState(new Date());
 
   /**
    * Instancio todos los props que llegan al componente.
@@ -41,35 +40,40 @@ const Formulario = props => {
   useEffect(() => {
     if (Object.keys(pacienteObj).length > 0) {
       setId(pacienteObj.id);
-      setPaciente(pacienteObj.paciente);
-      setPropietario(pacienteObj.propietario);
+      setPaciente(pacienteObj.name);
+      setOwner(pacienteObj.owner);
       setEmail(pacienteObj.email);
-      setTelefono(pacienteObj.telefono);
-      setSintomas(pacienteObj.sintomas);
-      setFecha(pacienteObj.fecha);
+      setPhone(pacienteObj.phone);
+      setSymptom(pacienteObj.symptom);
+      // setDate( pacienteObj.date);
     }
   }, [pacienteObj]);
 
-  const store = async nuevoPaciente => {
+  const store = async newPatient => {
     const response_ = await axios
       .post(endpoint + '/appointment', {
-        name: nuevoPaciente.paciente,
-        owner: nuevoPaciente.propietario,
-        email: nuevoPaciente.email,
-        phone: nuevoPaciente.telefono,
-        symptom: nuevoPaciente.sintomas,
-        // date: nuevoPaciente.fecha
+        name: newPatient.paciente,
+        owner: newPatient.owner,
+        email: newPatient.email,
+        phone: newPatient.phone,
+        symptom: newPatient.symptom,
+        // date: newPatient.date
       })
       .then(function (response) {
         console.log(response);
       })
       .catch(function (error) {
         console.log(error);
+        Alert.alert('Error', 'Server error.', [
+          {text: 'Recordar después', style: 'cancel'},
+          {text: 'Cancelar'},
+          {text: 'Ok'},
+        ]);
       });
   };
 
   const handleCita = () => {
-    if ([paciente, propietario, email, fecha, sintomas].includes('')) {
+    if ([paciente, owner, email, date, symptom].includes('')) {
       //alerta para validar que todos los campos esten llenos.
       Alert.alert('Error', 'Todos los campos son obligatorios.', [
         {text: 'Recordar después', style: 'cancel'},
@@ -78,35 +82,36 @@ const Formulario = props => {
       ]);
       return;
     }
-    const nuevoPaciente = {
+    const newPatient = {
       paciente,
-      propietario,
+      owner,
       email,
-      telefono,
-      fecha,
-      sintomas,
+      phone,
+      date,
+      symptom,
     };
     if (id) {
       //se edita el paciente
-      nuevoPaciente.id = id;
+      newPatient.id = id;
       const pacientesActualizados = pacientes.map(pacienteState =>
-        pacienteState.id === nuevoPaciente.id ? nuevoPaciente : pacienteState,
+        pacienteState.id === newPatient.id ? newPatient : pacienteState,
       );
       setPacientes(pacientesActualizados);
       setPacienteApp({});
     } else {
-      store(nuevoPaciente);
+      console.log({newPatient});
+      store(newPatient);
     }
 
     setModalVisible(!modalVisible); //cierro el modal despues de guardar
     getAllAppointments();
     setId('');
     setPaciente('');
-    setPropietario('');
+    setOwner('');
     setEmail('');
-    setTelefono('');
-    setFecha(new Date());
-    setSintomas('');
+    setPhone('');
+    setDate(new Date());
+    setSymptom('');
   };
 
 
@@ -122,16 +127,16 @@ const Formulario = props => {
 
           <Pressable
             style={styles.btnCancelar}
-            onLongPress={() => {
+            onPress={() => {
               setModalVisible(!modalVisible);
               setPacienteApp({});
               setId('');
               setPaciente('');
-              setPropietario('');
+              setOwner('');
               setEmail('');
-              setTelefono('');
-              setFecha(new Date());
-              setSintomas('');
+              setPhone('');
+              setDate(new Date());
+              setSymptom('');
             }}>
             <Text style={styles.btnCancelarTexto}>X Cancelar</Text>
           </Pressable>
@@ -153,8 +158,8 @@ const Formulario = props => {
               style={styles.input}
               placeholder="Propietario"
               placeholderTextColor={'#666'}
-              value={propietario}
-              onChangeText={setPropietario}
+              value={owner}
+              onChangeText={setOwner}
             />
           </View>
 
@@ -177,8 +182,8 @@ const Formulario = props => {
               placeholder="Telefono"
               placeholderTextColor={'#666'}
               keyboardType="phone-pad"
-              value={telefono}
-              onChangeText={setTelefono}
+              value={phone}
+              onChangeText={setPhone}
               maxLength={12}
             />
           </View>
@@ -187,9 +192,9 @@ const Formulario = props => {
             <Text style={styles.label}>Fecha Alta</Text>
             <View style={styles.fechaContenedor}>
               <DatePicker
-                date={fecha}
+                date={date}
                 locale="es"
-                onDateChange={date => setFecha(date)}
+                onDateChange={date => setDate(date)}
               />
             </View>
           </View>
@@ -201,8 +206,8 @@ const Formulario = props => {
               placeholder="Sintomas paciente"
               placeholderTextColor={'#666'}
               keyboardType="phone-pad"
-              value={sintomas}
-              onChangeText={setSintomas}
+              value={symptom}
+              onChangeText={setSymptom}
               multiline={true}
               numberOfLines={4}
             />

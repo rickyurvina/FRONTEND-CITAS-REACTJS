@@ -34,7 +34,7 @@ const Paciente = ({
       <View style={styles.contenedorBotones}>
         <Pressable
           style={[styles.btn, styles.btnEditar]}
-          onLongPress={() => {
+          onPress={() => {
             setModalVisible(true);
             pacienteEditar(id);
           }}>
@@ -42,7 +42,7 @@ const Paciente = ({
         </Pressable>
         <Pressable
           style={[styles.btn, styles.btnEliminar]}
-          onLongPress={() => pacienteEliminar(id)}>
+          onPress={() => pacienteEliminar(id)}>
           <Text>Eliminar</Text>
         </Pressable>
       </View>

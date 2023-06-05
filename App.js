@@ -1,5 +1,5 @@
-import React, {Fragment, useState, useEffect, createContext } from 'react';
-import type {Node} from 'react';
+import React, { useState, useEffect, createContext } from 'react';
+import type { Node } from 'react';
 import {
   SafeAreaView,
   Text,
@@ -58,7 +58,7 @@ const App: () => Node = () => {
       'Deseas Eliminar?',
       'Un paciente eliminado no se puede recuperar',
       [
-        {text: 'Cancelar'},
+        { text: 'Cancelar' },
         {
           text: 'Si, Eliminar',
           onPress: () => {
@@ -70,59 +70,57 @@ const App: () => Node = () => {
   };
 
   return (
-    <UserContext.Provider value={'Hola'}>
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.titulo}>
-          Administrador de Citas{' '}
-          <Text style={styles.tituloBold}>Veterinaria</Text>
-        </Text>
-        <Pressable
-          style={styles.btnNuevaCita}
-          onPress={() => setModalVisible(!modalVisible)}>
-          <Text style={styles.btnTextoNuevaCita}>Nueva Cita</Text>
-        </Pressable>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.titulo}>
+        Administrador de Citas{' '}
+        <Text style={styles.tituloBold}>Veterinaria</Text>
+      </Text>
+      <Pressable
+        style={styles.btnNuevaCita}
+        onPress={() => setModalVisible(!modalVisible)}>
+        <Text style={styles.btnTextoNuevaCita}>Nueva Cita</Text>
+      </Pressable>
 
-        {pacientes.length === 0 ? (
-          <Text style={styles.noPacientes}> No hay pacientes</Text>
-        ) : (
-          <FlatList
-            style={styles.listado}
-            data={pacientes}
-            keyExtractor={item => item.id}
-            renderItem={({item}) => {
-              return (
-                <Paciente
-                  item={item}
-                  setModalVisible={setModalVisible}
-                  setPaciente={setPaciente}
-                  pacienteEditar={pacienteEditar}
-                  pacienteEliminar={pacienteEliminar}
-                  setModalPaciente={setModalPaciente}
-                />
-              );
-            }}
-          />
-        )}
+      {pacientes.length === 0 ? (
+        <Text style={styles.noPacientes}> No hay pacientes</Text>
+      ) : (
+        <FlatList
+          style={styles.listado}
+          data={pacientes}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => {
+            return (
+              <Paciente
+                item={item}
+                setModalVisible={setModalVisible}
+                setPaciente={setPaciente}
+                pacienteEditar={pacienteEditar}
+                pacienteEliminar={pacienteEliminar}
+                setModalPaciente={setModalPaciente}
+              />
+            );
+          }}
+        />
+      )}
 
-        <Formulario
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          pacientes={pacientes}
-          setPacientes={setPacientes}
+      <Formulario
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        pacientes={pacientes}
+        setPacientes={setPacientes}
+        paciente={paciente}
+        setPaciente={setPaciente}
+        getAllAppointments={getAllAppointments}
+      />
+
+      <Modal visible={modalPaciente} animationType="fade">
+        <InformacionPaciente
           paciente={paciente}
           setPaciente={setPaciente}
-          getAllAppointments={getAllAppointments}
+          setModalPaciente={setModalPaciente}
         />
-
-        <Modal visible={modalPaciente} animationType="fade">
-          <InformacionPaciente
-            paciente={paciente}
-            setPaciente={setPaciente}
-            setModalPaciente={setModalPaciente}
-          />
-        </Modal>
-      </SafeAreaView>
-    </UserContext.Provider>
+      </Modal>
+    </SafeAreaView>
   );
 };
 

@@ -17,7 +17,7 @@ const InformacionPaciente = ({paciente, setPaciente, setModalPaciente}) => {
             <View>
                 <Pressable
                     style={styles.btnCerrar}
-                    onLongPress={() => {
+                    onPress={() => {
                         setModalPaciente(false)
                         setPaciente({})
                     }}
@@ -32,12 +32,12 @@ const InformacionPaciente = ({paciente, setPaciente, setModalPaciente}) => {
             >
                 <View style={styles.campo}>
                     <Text style={styles.label}>Nombre:</Text>
-                    <Text style={styles.valor}>{paciente.paciente}</Text>
+                    <Text style={styles.valor}>{paciente.name}</Text>
                 </View>
 
                 <View style={styles.campo}>
                     <Text style={styles.label}>Propietario:</Text>
-                    <Text style={styles.valor}>{paciente.propietario}</Text>
+                    <Text style={styles.valor}>{paciente.owner}</Text>
                 </View>
                 
                 <View style={styles.campo}>
@@ -47,7 +47,7 @@ const InformacionPaciente = ({paciente, setPaciente, setModalPaciente}) => {
 
                 <View style={styles.campo}>
                     <Text style={styles.label}>Teléfono:</Text>
-                    <Text style={styles.valor}>{paciente.telefono}</Text>
+                    <Text style={styles.valor}>{paciente.phone}</Text>
                 </View>
 
                 <View style={styles.campo}>
@@ -57,7 +57,7 @@ const InformacionPaciente = ({paciente, setPaciente, setModalPaciente}) => {
 
                 <View style={styles.campo}>
                     <Text style={styles.label}>Síntomas:</Text>
-                    <Text style={styles.valor}>{paciente.sintomas}</Text>
+                    <Text style={styles.valor}>{paciente.symptom}</Text>
                 </View>
 
             </View>
