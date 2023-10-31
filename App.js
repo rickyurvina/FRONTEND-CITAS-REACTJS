@@ -16,8 +16,8 @@ import axios from 'axios';
 import Formulario from './src/components/Formulario';
 import Paciente from './src/components/Paciente';
 import InformacionPaciente from './src/components/InformacionPaciente';
-
-const endpoint = "http://192.168.1.189:8000/api";
+import {URL} from './src/helpers/index';
+const endpoint = URL;
 const UserContext = createContext();
 
 const App: () => Node = () => {
@@ -32,7 +32,7 @@ const App: () => Node = () => {
 
   const getAllAppointments = async () => {
     const response = await axios
-      .get(`${endpoint}/appointment`)
+      .get(`${endpoint}appointment`)
       .then(res => {
         setPacientes(res.data);
       })
@@ -41,7 +41,7 @@ const App: () => Node = () => {
 
   const deleteAppointment = async id => {
     await axios
-      .delete(`${endpoint}/appointment/${id}`)
+      .delete(`${endpoint}appointment/${id}`)
       .then(res => {
         getAllAppointments();
       })

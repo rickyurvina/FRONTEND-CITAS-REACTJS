@@ -14,8 +14,8 @@ import {
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import axios from 'axios';
-
-const endpoint = "http://192.168.1.189:8000/api";
+import {URL} from '../helpers/index';
+const endpoint = URL;
 
 const Formulario = props => {
   const [paciente, setPaciente] = useState('');
@@ -51,7 +51,7 @@ const Formulario = props => {
 
   const store = async newPatient => {
     const response_ = await axios
-      .post(endpoint + '/appointment', {
+      .post(endpoint + 'appointment', {
         name: newPatient.paciente,
         owner: newPatient.owner,
         email: newPatient.email,
