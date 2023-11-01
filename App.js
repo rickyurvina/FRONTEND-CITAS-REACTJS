@@ -31,6 +31,7 @@ const App: () => Node = () => {
   }, []);
 
   const getAllAppointments = async () => {
+    
     const response = await axios
       .get(`${endpoint}appointment`)
       .then(res => {
@@ -111,6 +112,7 @@ const App: () => Node = () => {
         paciente={paciente}
         setPaciente={setPaciente}
         getAllAppointments={getAllAppointments}
+        pacienteAgregado={getAllAppointments}
       />
 
       <Modal visible={modalPaciente} animationType="fade">

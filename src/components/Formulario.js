@@ -1,5 +1,5 @@
 //rafce
-import React, {useState, useEffect,  useContext} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 
 import {
   Modal,
@@ -12,11 +12,12 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
+
 import DatePicker from 'react-native-date-picker';
 import axios from 'axios';
 import {URL} from '../helpers/index';
 const endpoint = URL;
-
 const Formulario = props => {
   const [paciente, setPaciente] = useState('');
   const [id, setId] = useState('');
@@ -25,6 +26,9 @@ const Formulario = props => {
   const [phone, setPhone] = useState('');
   const [symptom, setSymptom] = useState('');
   const [date, setDate] = useState(new Date());
+  const [users, setUsers] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [isPickerEnabled, setIsPickerEnabled] = useState(false);
 
   /**
    * Instancio todos los props que llegan al componente.
@@ -35,19 +39,37 @@ const Formulario = props => {
   const {setModalVisible} = props;
   const {paciente: pacienteObj} = props;
   const {setPaciente: setPacienteApp} = props;
-  const {getAllAppointments} = props;
+  const {pacienteAgregado} = props;
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   useEffect(() => {
     if (Object.keys(pacienteObj).length > 0) {
+      console.log(pacienteObj.user.id)
       setId(pacienteObj.id);
       setPaciente(pacienteObj.name);
-      setOwner(pacienteObj.owner);
+      setOwner(pacienteObj.user.id);
       setEmail(pacienteObj.email);
       setPhone(pacienteObj.phone);
       setSymptom(pacienteObj.symptom);
       // setDate( pacienteObj.date);
     }
   }, [pacienteObj]);
+
+  const getUsers = async () => {
+    const response = await axios
+      .get(`${endpoint}users`)
+      .then(res => {
+        setUsers(res.data);
+        setIsPickerEnabled(true);
+      })
+      .catch(error => {
+        console.log(error);
+        setIsPickerEnabled(false);
+      });
+  };
 
   const store = async newPatient => {
     const response_ = await axios
@@ -63,7 +85,6 @@ const Formulario = props => {
         console.log(response);
       })
       .catch(function (error) {
-        console.log(error);
         Alert.alert('Error', 'Server error.', [
           {text: 'Recordar después', style: 'cancel'},
           {text: 'Cancelar'},
@@ -99,12 +120,10 @@ const Formulario = props => {
       setPacientes(pacientesActualizados);
       setPacienteApp({});
     } else {
-      console.log({newPatient});
       store(newPatient);
     }
 
     setModalVisible(!modalVisible); //cierro el modal despues de guardar
-    getAllAppointments();
     setId('');
     setPaciente('');
     setOwner('');
@@ -112,10 +131,11 @@ const Formulario = props => {
     setPhone('');
     setDate(new Date());
     setSymptom('');
+    pacienteAgregado();
+    
+
   };
 
-
- 
   return (
     <Modal animationType="slide" visible={modalVisible}>
       <SafeAreaView style={styles.contenido}>
@@ -152,15 +172,22 @@ const Formulario = props => {
             />
           </View>
 
+        
           <View style={styles.campo}>
-            <Text style={styles.label}>Propietario</Text>
-            <TextInput
+          <Text style={styles.label}>Propietario</Text>
+
+            <Picker
               style={styles.input}
-              placeholder="Propietario"
-              placeholderTextColor={'#666'}
-              value={owner}
-              onChangeText={setOwner}
-            />
+              selectedValue={owner}
+              enabled={isPickerEnabled}
+              onValueChange={(itemValue, itemIndex) => {
+                setOwner(itemValue);
+              }}>
+              {users?.map(user => (  
+                <Picker.Item key={user.id} label={user.name} value={user.id} />
+              ))}
+
+            </Picker>
           </View>
 
           <View style={styles.campo}>
